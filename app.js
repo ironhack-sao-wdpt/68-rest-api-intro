@@ -13,8 +13,12 @@ app.use(morgan("combined"));
 
 // 5. Configurar as rotas (endpoints) de API
 const productRouter = require("./routes/product.route");
+const userRouter = require("./routes/user.route");
+const orderRouter = require("./routes/order.route");
 // Redireciona todas as requisições para o roteador configurado no arquivo 'product.route.js'
 app.use("/", productRouter);
+app.use("/", userRouter);
+app.use("/", orderRouter);
 
 // 4. Conectar com o banco de dados
 const connectToDB = require("./config/db.config");
