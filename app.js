@@ -1,3 +1,6 @@
+// Carrega as variáveis de ambiente presentes no arquivo .env
+require("dotenv").config();
+
 // 1. Importar o pacote Express
 const express = require("express");
 const morgan = require("morgan");
