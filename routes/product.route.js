@@ -1,10 +1,11 @@
 const router = require("express").Router();
 const ProductModel = require("../models/Product.model");
+const isAuthenticated = require("../middlewares/isAuthenticated");
 
 // Configurar rotas da API
 
 // Crud (Create) - POST
-router.post("/product", async (req, res) => {
+router.post("/product", isAuthenticated, async (req, res) => {
   try {
     // 1. Extrair as informações do corpo da requisição
     const data = req.body;
@@ -22,12 +23,12 @@ router.post("/product", async (req, res) => {
 });
 
 // cRud (Read) - GET de todos os produtos
-router.get("/product", async (req, res) => {
+router.get("/product", isAuthenticated, async (req, res) => {
   try {
     let { page, limit } = req.query;
 
-    page = Number(page);
-    limit = Number(limit);
+    page = Number(page) || 0;
+    limit = Number(limit) || 20;
 
     const products = await ProductModel.find()
       .skip(page * limit)
@@ -41,7 +42,7 @@ router.get("/product", async (req, res) => {
 });
 
 // cRud (Read) - GET filtrado por id do produto
-router.get("/product/:_id", async (req, res) => {
+router.get("/product/:_id", isAuthenticated, async (req, res) => {
   try {
     // Extrai o id da URL
     const { _id } = req.params;
@@ -64,7 +65,7 @@ router.get("/product/:_id", async (req, res) => {
 
 // crUd (Update) - PATCH (atualização não-destrutiva)
 
-router.patch("/product/:_id", async (req, res) => {
+router.patch("/product/:_id", isAuthenticated, async (req, res) => {
   try {
     // 1. Extrair o id da URL
     const { _id } = req.params;
@@ -93,7 +94,7 @@ router.patch("/product/:_id", async (req, res) => {
 
 // crUd (Update) - PUT (atualização destrutiva (substituição))
 
-router.put("/product/:_id", async (req, res) => {
+router.put("/product/:_id", isAuthenticated, async (req, res) => {
   try {
     // 1. Extrair o id da URL
     const { _id } = req.params;
@@ -121,7 +122,7 @@ router.put("/product/:_id", async (req, res) => {
 });
 
 // cruD (Delete) - DELETE
-router.delete("/product/:_id", async (req, res) => {
+router.delete("/product/:_id", isAuthenticated, async (req, res) => {
   try {
     // 1. Extrair o id da URL
     const { _id } = req.params;

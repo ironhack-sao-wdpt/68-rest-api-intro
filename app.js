@@ -4,12 +4,19 @@ require("dotenv").config();
 // 1. Importar o pacote Express
 const express = require("express");
 const morgan = require("morgan");
+const cors = require("cors");
 
 // 2. Instanciar o Express
 const app = express();
 
 // 3. Configurar o servidor para aceitar JSON
 app.use(express.json());
+
+// Cross Origin Resource Sharing
+// Cross Origin = Entre origens ('domínios') diferentes
+// Resource = HTML, CSS, imagens, fontes, JSON
+// Sharing = Compartilhamento
+app.use(cors({ origin: "http://localhost:3000" })); //OBS.: NÃO COLOCAR BARRA NO FINAL DO DOMÍNIO
 
 // Configura o servidor para criar um log de cada requisição recebida
 app.use(morgan("combined"));
