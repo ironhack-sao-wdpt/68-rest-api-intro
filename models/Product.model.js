@@ -1,6 +1,7 @@
-const { Schema, model } = require("mongoose");
+const { Schema, model, Types } = require("mongoose");
 
 const ProductSchema = new Schema({
+  ownerId: { type: Types.ObjectId, ref: "User" },
   name: String,
   description: { type: String, maxlength: 500 },
   inStock: { type: Number, min: 0 },

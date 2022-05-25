@@ -2,16 +2,32 @@ const router = require("express").Router();
 const ProductModel = require("../models/Product.model");
 const isAuthenticated = require("../middlewares/isAuthenticated");
 
+const uploader = require("../config/cloudinary.config");
+
 // Configurar rotas da API
+
+router.post(
+  "/upload",
+  isAuthenticated,
+  uploader.single("picture"),
+  (req, res) => {
+    if (!req.file) {
+      return res.status(500).json({ msg: "Falha ao fazer upload da imagem" });
+    }
+
+    return res.status(201).json({ fileUrl: req.file.path });
+  }
+);
 
 // Crud (Create) - POST
 router.post("/product", isAuthenticated, async (req, res) => {
   try {
     // 1. Extrair as informações do corpo da requisição
     const data = req.body;
+    const { _id } = req.user;
 
     // 2. Inserir estas informações no banco
-    const result = await ProductModel.create(data);
+    const result = await ProductModel.create({ ...data, ownerId: _id });
 
     // 3. Responder o resultado
     // 201: Created
@@ -23,9 +39,29 @@ router.post("/product", isAuthenticated, async (req, res) => {
 });
 
 // cRud (Read) - GET de todos os produtos
-router.get("/product", isAuthenticated, async (req, res) => {
+router.get("/my-products", isAuthenticated, async (req, res) => {
   try {
     let { page, limit } = req.query;
+    const { _id } = req.user;
+
+    page = Number(page) || 0;
+    limit = Number(limit) || 20;
+
+    const products = await ProductModel.find({ ownerId: _id })
+      .skip(page * limit)
+      .limit(limit);
+
+    return res.status(200).json(products);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ msg: "Falha ao buscar produtos" });
+  }
+});
+
+router.get("/products", isAuthenticated, async (req, res) => {
+  try {
+    let { page, limit } = req.query;
+    const { _id } = req.user;
 
     page = Number(page) || 0;
     limit = Number(limit) || 20;
@@ -69,12 +105,13 @@ router.patch("/product/:_id", isAuthenticated, async (req, res) => {
   try {
     // 1. Extrair o id da URL
     const { _id } = req.params;
+    const userId = req.user._id;
 
     const data = req.body;
 
     // 2. Atualizar o produto com esse id usando os dados do corpo da requisição
     const result = await ProductModel.findOneAndUpdate(
-      { _id },
+      { _id, ownerId: userId },
       { $set: data },
       { new: true, runValidators: true }
     ); // runValidators força o mongoose a rodar as regras do Schema também na atualização e não somente na criação
