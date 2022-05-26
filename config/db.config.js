@@ -3,9 +3,7 @@ const mongoose = require("mongoose");
 
 module.exports = async () => {
   try {
-    const connection = await mongoose.connect(
-      "mongodb://172.23.16.1:27017/rest-intro"
-    ); // No lugar de '172.27.160.1' no seu código, provavelmente você usará 'localhost', a menos que seu servidor MongoDB esteja rodando em outra máquina diferente da máquina executando este projeto.
+    const connection = await mongoose.connect(process.env.MONGODB_URI); // No lugar de '172.27.160.1' no seu código, provavelmente você usará 'localhost', a menos que seu servidor MongoDB esteja rodando em outra máquina diferente da máquina executando este projeto.
 
     console.log(`Conectado ao banco: ${connection.connections[0].name}`);
   } catch (err) {

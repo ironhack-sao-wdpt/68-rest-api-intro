@@ -16,7 +16,7 @@ app.use(express.json());
 // Cross Origin = Entre origens ('domínios') diferentes
 // Resource = HTML, CSS, imagens, fontes, JSON
 // Sharing = Compartilhamento
-app.use(cors({ origin: "http://localhost:3000" })); //OBS.: NÃO COLOCAR BARRA NO FINAL DO DOMÍNIO
+app.use(cors({ origin: process.env.REACT_APP_URL })); //OBS.: NÃO COLOCAR BARRA NO FINAL DO DOMÍNIO
 
 // Configura o servidor para criar um log de cada requisição recebida
 app.use(morgan("combined"));
@@ -37,5 +37,7 @@ const connectToDB = require("./config/db.config");
 connectToDB().then(() => {
   // 6. Subir o servidor para escutar requisições na porta 4000
 
-  app.listen(4000, () => console.log("Servidor rodando na porta ", 4000));
+  app.listen(process.env.PORT, () =>
+    console.log("Servidor rodando na porta ", process.env.PORT)
+  );
 });
